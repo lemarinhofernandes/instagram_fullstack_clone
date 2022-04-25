@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "502067161763",
+    "project_id": "instagram-tutorial-be250",
+    "storage_bucket": "instagram-tutorial-be250.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:502067161763:android:1621866f91003d8f386d16",
+        "android_client_info": {
+          "package_name": "com.example.instagram"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "502067161763-3lgh4qqohauprnvh7a456f9i8g932rhv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASIJhLrdVI18_lhoWrfC8l6h97t9XBFDA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "502067161763-3lgh4qqohauprnvh7a456f9i8g932rhv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
