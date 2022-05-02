@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:instagram/resources/auth_methods.dart';
+import 'package:instagram/responsive/mobile_screen_layout.dart';
+import 'package:instagram/responsive/responsive_layout_screen.dart';
+import 'package:instagram/responsive/web_screen_layout.dart';
+import 'package:instagram/screens/signup_screen.dart';
 import 'package:instagram/utils/colors.dart';
+import 'package:instagram/utils/utils.dart';
 import 'package:instagram/widgets/text_field_input.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -13,6 +19,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -51,7 +58,14 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 24),
               InkWell(
                 child: Container(
-                  child: const Text('Log in'),
+                  child: _isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Text('Log in'),
                   width: double.infinity,
                   alignment: Alignment.center,
                   padding: const EdgeInsets.symmetric(vertical: 12),
@@ -64,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     color: blueColor,
                   ),
                 ),
-                onTap: () {},
+                onTap: _loginUser,
               ),
               const SizedBox(height: 12),
               Flexible(child: Container(), flex: 2),
@@ -76,15 +90,21 @@ class _LoginScreenState extends State<LoginScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 8),
                   ),
                   GestureDetector(
-                    child: Container(
-                      child: const Text(
-                        "Sign up.",
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                      child: Container(
+                        child: const Text(
+                          "Sign up.",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                    ),
-                    onTap: () {},
-                  )
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SignUpScreen(),
+                          ),
+                        );
+                      })
                 ],
               )
               //trasitioning to signing up
@@ -93,5 +113,34 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  void _loginUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+    String res = await AuthMethods().loginUser(
+      email: _emailController.text,
+      password: _passController.text,
+    );
+    setState(() {
+      _isLoading = false;
+    });
+    res == 'success'
+        ? Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ResponsiveLayout(
+                webScreenLayout: WebScreenLayout(),
+                mobileScreenLayout: MobileScreenLayout(),
+              ),
+            ),
+          )
+        : showSnackBar(res, context);
+
+    // res == 'success'
+    //     ? Navigator.of(context).pushReplacement(
+    //         MaterialPageRoute(builder: (context) => const HomeScreen()))
+    //     : showSnackBar(res, context);
   }
 }

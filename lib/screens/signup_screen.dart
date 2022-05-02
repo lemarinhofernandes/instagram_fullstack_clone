@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagram/resources/auth_methods.dart';
+import 'package:instagram/responsive/mobile_screen_layout.dart';
+import 'package:instagram/responsive/responsive_layout_screen.dart';
+import 'package:instagram/responsive/web_screen_layout.dart';
 import 'package:instagram/utils/Utils.dart';
 import 'package:instagram/utils/colors.dart';
 import 'package:instagram/widgets/text_field_input.dart';
@@ -21,6 +24,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _bioController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   Uint8List? _image;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -96,29 +100,29 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   textInputType: TextInputType.text),
               const SizedBox(height: 24),
               InkWell(
-                  child: Container(
-                    child: const Text('Log in'),
-                    width: double.infinity,
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    decoration: const ShapeDecoration(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(4),
-                        ),
+                child: Container(
+                  child: _isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Text('Sign up'),
+                  width: double.infinity,
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  decoration: const ShapeDecoration(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(4),
                       ),
-                      color: blueColor,
                     ),
+                    color: blueColor,
                   ),
-                  onTap: () async {
-                    String res = await AuthMethods().signUpUser(
-                        email: _emailController.text,
-                        password: _passController.text,
-                        username: _usernameController.text,
-                        bio: _bioController.text,
-                        file: _image!);
-                    debugPrint(res);
-                  }),
+                ),
+                onTap: _signUpUser,
+              ),
               const SizedBox(height: 12),
               Flexible(child: Container(), flex: 2),
               Row(
@@ -146,6 +150,33 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ),
       ),
     );
+  }
+
+  void _signUpUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+    String res = await AuthMethods().signUpUser(
+        email: _emailController.text,
+        password: _passController.text,
+        username: _usernameController.text,
+        bio: _bioController.text,
+        file: _image!);
+    setState(() {
+      _isLoading = false;
+    });
+    debugPrint(res);
+    res != 'success'
+        ? showSnackBar(res, context)
+        : Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ResponsiveLayout(
+                webScreenLayout: WebScreenLayout(),
+                mobileScreenLayout: MobileScreenLayout(),
+              ),
+            ),
+          );
   }
 
   void _selectImage() async {
